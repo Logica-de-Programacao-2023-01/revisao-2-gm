@@ -1,12 +1,8 @@
 package q1
 
-//Você está trabalhando em um projeto de gerenciamento de uma escola. O sistema precisa armazenar informações sobre os alunos, incluindo seu nome, idade e as matérias em que estão matriculados, juntamente com suas respectivas notas. Você decidiu usar structs e mapas para representar essas informações.
-//
-//No entanto, você descobriu que existem dois conjuntos de dados diferentes sobre os alunos. Cada conjunto de dados é representado por um mapa. O mapa "studentData1" contém informações sobre as notas dos alunos para a primeira metade do semestre, enquanto o mapa "studentData2" contém informações sobre as notas para a segunda metade do semestre.
-//
-//Sua tarefa é criar uma função chamada "mergeStudentData" que recebe os mapas "studentData1" e "studentData2" como parâmetros e retorna um novo mapa que contém as informações combinadas dos dois conjuntos de dados.
-//
-//O objetivo é combinar as informações de cada aluno, preservando o nome e a idade, e atualizando as matérias e notas de acordo com o mapa mais recente. Lembre-se de que um aluno pode estar matriculado em diferentes matérias em cada metade do semestre.
+import (
+	"fmt"
+)
 
 type Student struct {
 	Name     string
@@ -14,7 +10,79 @@ type Student struct {
 	Subjects map[string]float64
 }
 
-func MergeStudentData(studentData1 map[string]Student, studentData2 map[string]Student) map[string]Student {
-	// Seu código aqui
-	return nil
+func mergeStudentData(studentData1, studentData2 map[string]Student) map[string]Student {
+	mergedData := make(map[string]Student)
+
+	// Copia as informações do studentData1 para o mapa mergedData
+	for key, student := range studentData1 {
+		mergedData[key] = student
+	}
+
+	// Atualiza as informações existentes ou adiciona novos alunos do studentData2 para o mapa mergedData
+	for key, student := range studentData2 {
+		existingStudent, ok := mergedData[key]
+		if ok {
+			// Atualiza as matérias e notas do aluno existente com as informações mais recentes
+			for subject, grade := range student.Subjects {
+				existingStudent.Subjects[subject] = grade
+			}
+		} else {
+			// Adiciona um novo aluno ao mapa mergedData
+			mergedData[key] = student
+		}
+	}
+
+	return mergedData
+}
+
+func main() {
+	studentData1 := map[string]Student{
+		"John": {
+			Name: "John",
+			Age:  20,
+			Subjects: map[string]float64{
+				"Math":   85.0,
+				"Science": 78.0,
+			},
+		},
+		"Alice": {
+			Name: "Alice",
+			Age:  19,
+			Subjects: map[string]float64{
+				"English": 90.0,
+				"Physics": 82.0,
+			},
+		},
+	}
+
+	studentData2 := map[string]Student{
+		"John": {
+			Name: "John",
+			Age:  20,
+			Subjects: map[string]float64{
+				"Math":   90.0,
+				"History": 88.0,
+			},
+		},
+		"Bob": {
+			Name: "Bob",
+			Age:  21,
+			Subjects: map[string]float64{
+				"Chemistry": 79.0,
+				"Physics":   85.0,
+			},
+		},
+	}
+
+	mergedData := mergeStudentData(studentData1, studentData2)
+
+	// Exibe as informações combinadas dos alunos
+	for _, student := range mergedData {
+		fmt.Printf("Name: %s, Age: %d\n", student.Name, student.Age)
+		fmt.Println("Subjects:")
+		for subject, grade := range student.Subjects {
+			fmt.Printf("- %s: %.2f\n", subject, grade)
+		}
+		fmt.Println()
+	}
 }
